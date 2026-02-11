@@ -1,4 +1,5 @@
 // Styles
+import 'animate.css';
 import "./styles/index.css";
 
 // Toaster
