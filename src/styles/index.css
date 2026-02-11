@@ -91,3 +91,9 @@
     }
   }
 }
+
+@layer utilities {
+  .container {
+    @apply max-w-96 mx-auto px-4;
+  }
+}
