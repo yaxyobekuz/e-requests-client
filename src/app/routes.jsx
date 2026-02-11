@@ -9,6 +9,7 @@ import MyRequestsPage from "@/features/requests/pages/MyRequestsPage";
 import ServicesPage from "@/features/services/pages/ServicesPage";
 import MskPage from "@/features/msk/pages/MskPage";
 import RegionSetupPage from "@/features/regions/pages/RegionSetupPage";
+import GetStartedPage from "@/features/get-started/pages/GetStartedPage";
 
 // Guards
 import AuthGuard from "@/shared/components/guards/AuthGuard";
@@ -26,6 +27,7 @@ const Routes = () => {
     <RoutesWrapper>
       {/* Public routes */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/get-started/:stepNumber?" element={<GetStartedPage />} />
 
       {/* Guest only routes */}
       <Route element={<GuestGuard />}>
