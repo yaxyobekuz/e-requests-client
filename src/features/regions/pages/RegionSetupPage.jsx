@@ -1,9 +1,20 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// Toast
 import { toast } from "sonner";
-import { regionsAPI, usersAPI } from "@/shared/api/http";
+
+// React
+import { useEffect, useState } from "react";
+
+// Router
+import { useNavigate } from "react-router-dom";
+
+// Data
 import { HOUSE_TYPES } from "@/shared/data/house-types";
+
+// API
+import { regionsAPI, usersAPI } from "@/shared/api/http";
+
+// Tanstack Query
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const STEPS = [
   { id: 1, label: "Viloyat" },
@@ -40,6 +51,7 @@ const RegionSetupPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [step, setStep] = useState(1);
+  const [isPrefilled, setIsPrefilled] = useState(false);
   const [form, setForm] = useState({
     region: "",
     district: "",
@@ -53,6 +65,41 @@ const RegionSetupPage = () => {
     isNeighborhoodCustom: false,
     isStreetCustom: false,
   });
+
+  const { data: profile } = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: () => usersAPI.getProfile().then((res) => res.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  useEffect(() => {
+    if (isPrefilled || !profile?.address) return;
+
+    const address = profile.address || {};
+    const getId = (value) =>
+      value && typeof value === "object" ? value._id : value || "";
+    const neighborhoodId = getId(address.neighborhood);
+    const streetId = getId(address.street);
+    const isNeighborhoodCustom =
+      !neighborhoodId && !!address.neighborhoodCustom;
+    const isStreetCustom = !streetId && !!address.streetCustom;
+
+    setForm((prev) => ({
+      ...prev,
+      region: getId(address.region),
+      district: getId(address.district),
+      neighborhood: neighborhoodId,
+      street: streetId,
+      neighborhoodCustom: address.neighborhoodCustom || "",
+      streetCustom: address.streetCustom || "",
+      houseType: address.houseType || "private",
+      houseNumber: address.houseNumber || "",
+      apartment: address.apartment || "",
+      isNeighborhoodCustom,
+      isStreetCustom,
+    }));
+    setIsPrefilled(true);
+  }, [isPrefilled, profile]);
 
   // Viloyatlar
   const { data: regions = [] } = useQuery({
@@ -107,11 +154,7 @@ const RegionSetupPage = () => {
   const handleNext = () => {
     if (step === 1 && !form.region) return toast.error("Viloyatni tanlang");
     if (step === 2 && !form.district) return toast.error("Tumanni tanlang");
-    if (
-      step === 3 &&
-      !form.neighborhood &&
-      !form.isNeighborhoodCustom
-    )
+    if (step === 3 && !form.neighborhood && !form.isNeighborhoodCustom)
       return toast.error("Mahallani tanlang yoki nomini kiriting");
     if (
       step === 3 &&
@@ -119,11 +162,7 @@ const RegionSetupPage = () => {
       !form.neighborhoodCustom.trim()
     )
       return toast.error("Mahalla nomini kiriting");
-    if (
-      step === 4 &&
-      !form.street &&
-      !form.isStreetCustom
-    )
+    if (step === 4 && !form.street && !form.isStreetCustom)
       return toast.error("Ko'chani tanlang yoki nomini kiriting");
     if (step === 4 && form.isStreetCustom && !form.streetCustom.trim())
       return toast.error("Ko'cha nomini kiriting");
