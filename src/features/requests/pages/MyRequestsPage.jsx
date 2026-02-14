@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { requestsAPI } from "@/shared/api/http";
-import { REQUEST_CATEGORIES } from "@/shared/data/request-categories";
+import { requestCategories } from "@/shared/data/request-categories";
 import { REQUEST_STATUSES } from "@/shared/data/request-statuses";
 import { ArrowLeft, Pencil, X } from "lucide-react";
 import ModalWrapper from "@/shared/components/ui/ModalWrapper";
@@ -38,7 +38,7 @@ const MyRequestsPage = () => {
   };
 
   const getCategoryLabel = (id) =>
-    REQUEST_CATEGORIES.find((c) => c.id === id)?.label || id;
+    requestCategories.find((c) => c.id === id)?.label || id;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -167,7 +167,7 @@ const EditRequestForm = ({ _id, description, category, contactFirstName, contact
           onChange={(e) => setForm((p) => ({ ...p, category: e.target.value }))}
           className="w-full px-3 py-2 border rounded-lg"
         >
-          {REQUEST_CATEGORIES.map((c) => (
+          {requestCategories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.label}
             </option>
