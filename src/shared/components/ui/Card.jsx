@@ -1,17 +1,27 @@
 // Utils
 import { cn } from "@/shared/utils/cn";
 
-const Card = ({ className = "", children, responsive = false }) => {
+/**
+ * Card - Basic container with optional title.
+ *
+ * @param {object} props
+ * @param {string} [props.className=""] - Extra class names.
+ * @param {React.ReactNode} props.children - Card content.
+ * @param {boolean} [props.responsive=false] - Apply responsive padding/rounding.
+ * @param {string} [props.title=""] - Optional title text.
+ * @returns {JSX.Element}
+ */
+const Card = ({ className = "", children, responsive = false, title = "" }) => {
   return (
     <div
       className={cn(
-        "bg-white",
         responsive
-          ? "md:p-5 md:rounded-3xl md:border"
-          : "p-5 rounded-3xl border",
-        className
+          ? "xs:p-5 xs:rounded-2xl xs:bg-white"
+          : "bg-white p-5 rounded-2xl",
+        className,
       )}
     >
+      {title && <h2 className="font-semibold mb-3.5 text-blue-600">{title}</h2>}
       {children}
     </div>
   );
