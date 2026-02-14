@@ -1,19 +1,19 @@
-// Utils
-import { cn } from "@/shared/utils/cn";
-
-// Router
-import { Link } from "react-router-dom";
-
 // Hooks
 import useSteps from "../hooks/useSteps";
+
+// Router
+import { Link, Navigate } from "react-router-dom";
+
+// Components
+import StepBars from "@/shared/components/ui/StepBars";
 
 // Icons
 import { ChevronLeft, ChevronsRight } from "lucide-react";
 
 const GetStartedPage = () => {
   // If user is already authenticated, redirect to dashboard
-  const token = localStorage.getItem("token");
-  if (token) return <Navigate to="/dashboard" replace />;
+  // const token = localStorage.getItem("token");
+  // if (token) return <Navigate to="/dashboard" replace />;
 
   const { currentStep, isLastStep, isFirstStep, steps } = useSteps();
 
@@ -34,20 +34,8 @@ const GetStartedPage = () => {
           <ChevronLeft strokeWidth={1.5} size={20} />
         </Link>
 
-        {/* Bars */}
-        <div className="flex items-center gap-1.5 w-full">
-          {steps.map((step) => (
-            <div
-              key={step.number}
-              className={cn(
-                step.number <= currentStep.number
-                  ? "bg-blue-500"
-                  : "bg-gray-100",
-                "w-full h-1.5 rounded-full",
-              )}
-            />
-          ))}
-        </div>
+        {/* Step Bars */}
+        <StepBars totalSteps={steps.length} currentStep={currentStep} />
 
         {/* Skip button */}
         <Link
