@@ -10,17 +10,21 @@ import RegionGuard from "@/shared/components/guards/RegionGuard";
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 
 // Pages
-import MskPage from "@/features/msk/pages/MskPage";
 import HomePage from "@/features/home/pages/HomePage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
 import ServicesPage from "@/features/services/pages/ServicesPage";
 import RequestsPage from "@/features/requests/pages/RequestsPage";
+import MskMyOrdersPage from "@/features/msk/pages/MskMyOrdersPage";
+import NewMskOrderPage from "@/features/msk/pages/NewMskOrderPage";
+import EditMskOrderPage from "@/features/msk/pages/EditMskOrderPage";
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import NewRequestPage from "@/features/requests/pages/NewRequestPage";
 import MyRequestsPage from "@/features/requests/pages/MyRequestsPage";
 import RegionSetupPage from "@/features/regions/pages/RegionSetupPage";
+import MskCategoriesPage from "@/features/msk/pages/MskCategoriesPage";
 import EditRequestPage from "@/features/requests/pages/EditRequestPage";
+import MskOrderDetailPage from "@/features/msk/pages/MskOrderDetailPage";
 import GetStartedPage from "@/features/get-started/pages/GetStartedPage";
 import RequestDetailPage from "@/features/requests/pages/RequestDetailPage";
 import MyServiceReportsPage from "@/features/services/pages/MyServiceReportsPage";
@@ -56,7 +60,11 @@ const Routes = () => {
               path="/services/my-reports"
               element={<MyServiceReportsPage />}
             />
-            <Route path="/msk" element={<MskPage />} />
+            <Route path="/msk" element={<MskCategoriesPage />} />
+            <Route path="/msk/new" element={<NewMskOrderPage />} />
+            <Route path="/msk/my-orders" element={<MskMyOrdersPage />} />
+            <Route path="/msk/edit/:id" element={<EditMskOrderPage />} />
+            <Route path="/msk/orders/:id" element={<MskOrderDetailPage />} />
           </Route>
         </Route>
       </Route>
