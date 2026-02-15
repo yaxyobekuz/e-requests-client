@@ -7,9 +7,6 @@ import { authAPI, requestsAPI } from "@/shared/api/http";
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
 
-// Tanstack Query
-import { useQuery, useMutation } from "@tanstack/react-query";
-
 // Components
 import Card from "@/shared/components/ui/Card";
 import StepBars from "@/shared/components/ui/StepBars";
@@ -21,9 +18,13 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 // Data
 import { requestCategories } from "@/shared/data/request-categories";
 
+// Tanstack Query
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+
 const NewRequestPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const queryClient = useQueryClient();
   const categoryId = searchParams.get("category") || "infrastructure";
   const category = requestCategories.find((c) => c.id === categoryId);
 
@@ -48,6 +49,7 @@ const NewRequestPage = () => {
   const submitMutation = useMutation({
     mutationFn: (data) => requestsAPI.create(data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
       toast.success("Murojaat muvaffaqiyatli yuborildi!");
       navigate("/requests/my");
     },
