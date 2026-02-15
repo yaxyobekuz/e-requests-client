@@ -8,6 +8,7 @@ const initialState = {
   profile: initialModalData,
   editRequest: initialModalData,
   mskOrder: initialModalData,
+  serviceDetail: initialModalData,
 };
 
 export const modalSlice = createSlice({

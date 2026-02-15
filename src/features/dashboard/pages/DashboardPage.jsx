@@ -4,6 +4,7 @@ import navItems from "../data/nav.data";
 // Components
 import List from "@/shared/components/ui/List";
 import StoriesPanel from "../components/StoriesPanel";
+import BottomNavbar from "@/shared/components/ui/BottomNavbar";
 
 const DashboardPage = () => {
   return (
@@ -26,6 +27,9 @@ const DashboardPage = () => {
             to: item.to,
           }))}
         />
+
+        {/* Navbar */}
+        <BottomNavbar />
       </div>
     </div>
   );
