@@ -7,7 +7,8 @@ export const REQUEST_STATUSES = {
 
 export const SERVICE_REPORT_STATUSES = {
   unavailable: { label: "Mavjud emas", color: "bg-red-100 text-red-800" },
-  resolved: { label: "Bartaraf etildi", color: "bg-blue-100 text-blue-800" },
+  in_progress: { label: "Jarayonda", color: "bg-yellow-100 text-yellow-800" },
+  pending_confirmation: { label: "Tasdiq kutilmoqda", color: "bg-blue-100 text-blue-800" },
   confirmed: { label: "Tasdiqlandi", color: "bg-green-100 text-green-800" },
   rejected: { label: "Rad etildi", color: "bg-red-100 text-red-800" },
 };
