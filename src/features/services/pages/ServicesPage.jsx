@@ -1,24 +1,29 @@
-import { useNavigate } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+// Toaster
 import { toast } from "sonner";
-import { servicesAPI, serviceReportsAPI } from "@/shared/api/http";
-import { SERVICE_REPORT_STATUSES } from "@/shared/data/request-statuses";
-import {
-  ArrowLeft,
-  Flame,
-  Droplets,
-  Zap,
-  Wifi,
-  Thermometer,
-  PipetteIcon,
-  HelpCircle,
-} from "lucide-react";
 
-const ICON_MAP = { Flame, Droplets, Zap, Wifi, Thermometer, PipetteIcon };
+// Icons
+import * as Icons from "lucide-react";
+
+// Hooks
+import useModal from "@/shared/hooks/useModal";
+
+// Components
+import { Button } from "@/shared/components/shadcn/button";
+import List, { ListItem } from "@/shared/components/ui/List";
+import ModalWrapper from "@/shared/components/ui/ModalWrapper";
+import BackHeader from "@/shared/components/layout/BackHeader";
+
+// API
+import { servicesAPI, serviceReportsAPI } from "@/shared/api/http";
+
+// Data
+import { SERVICE_REPORT_STATUSES } from "@/shared/data/request-statuses";
+
+// Tanstack Query
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 const ServicesPage = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { openModal } = useModal("serviceDetail");
 
   const { data: services = [] } = useQuery({
     queryKey: ["services"],
@@ -30,132 +35,214 @@ const ServicesPage = () => {
     queryFn: () => serviceReportsAPI.getMyReports().then((res) => res.data),
   });
 
+  const getLatestReport = (serviceId) => {
+    const reports = myReports.filter((r) => r.service?._id === serviceId);
+    return reports.length > 0 ? reports[0] : null;
+  };
+
+  const handleServiceClick = (service) => {
+    const reports = myReports.filter((r) => r.service?._id === service._id);
+    const latestReport = reports.length > 0 ? reports[0] : null;
+    openModal("serviceDetail", { service, latestReport });
+  };
+
+  return (
+    <div className="min-h-screen pb-20 space-y-5 animate__animated animate__fadeIn">
+      <BackHeader href="/dashboard" title="Xizmatlar" />
+
+      <div className="container space-y-5">
+        <ListItem
+          title="Arizalarim"
+          className="rounded-2xl"
+          to="/services/my-reports"
+          icon={Icons.ClipboardList}
+          gradientTo="to-indigo-700"
+          gradientFrom="from-indigo-400"
+          description="Barcha arizalar holati"
+          trailing={<Icons.ChevronRight strokeWidth={1.5} />}
+        />
+
+        {/* Xizmatlar ro'yxati */}
+        <List
+          items={services.map((service) => {
+            const Icon = Icons[service.icon] || Icons.HelpCircle;
+            const report = getLatestReport(service._id);
+            const status = report
+              ? SERVICE_REPORT_STATUSES[report.status]
+              : null;
+
+            return {
+              icon: Icon,
+              key: service._id,
+              title: service.name,
+              gradientTo: "to-green-700",
+              gradientFrom: "from-green-400",
+              onClick: () => handleServiceClick(service),
+              trailing: status ? (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${status.color}`}
+                >
+                  {status.label}
+                </span>
+              ) : (
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-800">
+                  Mavjud
+                </span>
+              ),
+            };
+          })}
+        />
+      </div>
+
+      {/* Xizmat holati modal */}
+      <ModalWrapper name={"serviceDetail"} title="Xizmat holati">
+        <ServiceDetailModal />
+      </ModalWrapper>
+    </div>
+  );
+};
+
+const ServiceDetailModal = ({ service, latestReport, close }) => {
+  const queryClient = useQueryClient();
+
   const createMutation = useMutation({
     mutationFn: (data) => serviceReportsAPI.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["service-reports", "my"] });
-      toast.success("Holat xabari yuborildi!");
+      toast.success("Ariza muvaffaqiyatli yuborildi!");
+      close();
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || "Xatolik yuz berdi");
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Xatolik yuz berdi");
     },
   });
 
   const confirmMutation = useMutation({
     mutationFn: ({ id, confirmed }) =>
       serviceReportsAPI.confirm(id, { confirmed }),
-    onSuccess: () => {
+    onSuccess: (_, { confirmed }) => {
       queryClient.invalidateQueries({ queryKey: ["service-reports", "my"] });
-      toast.success("Javobingiz qabul qilindi!");
+      toast.success(
+        confirmed
+          ? "Xizmat mavjudligi tasdiqlandi!"
+          : "Muammo hali bartaraf etilmagan deb belgilandi",
+      );
+      close();
     },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || "Xatolik yuz berdi");
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Xatolik yuz berdi");
     },
   });
 
-  const handleToggleStatus = (serviceId) => {
-    createMutation.mutate({ serviceId });
-  };
+  if (!service) return null;
 
-  // Servislar bo'yicha eng oxirgi reportni olish
-  const getLatestReport = (serviceId) => {
-    return myReports.find((r) => r.service?._id === serviceId);
-  };
+  const Icon = Icons[service.icon] || Icons.HelpCircle;
+  const latestStatus = latestReport?.status;
+
+  const canCreateReport =
+    !latestStatus ||
+    latestStatus === "confirmed" ||
+    latestStatus === "rejected";
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b px-4 py-4">
-        <div className="max-w-lg mx-auto flex items-center gap-3">
-          <button onClick={() => navigate("/dashboard")} className="p-1">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-lg font-bold">Servislar</h1>
+    <div className="space-y-4">
+      <ListItem
+        icon={Icon}
+        title={service.name}
+        gradientTo="to-green-700"
+        gradientFrom="from-green-400"
+        className="bg-gray-100 rounded-lg"
+      />
+
+      {/* Pending */}
+      {latestStatus === "pending_confirmation" && (
+        <>
+          <p className="text-gray-500">
+            Admin muammoni bartaraf etilganini bildirdi. Tasdiqlaysizmi?
+          </p>
+
+          {/* Buttons */}
+          <div className="flex flex-col gap-3.5 xs:flex-row">
+            <Button
+              className="w-full"
+              onClick={() =>
+                confirmMutation.mutate({
+                  id: latestReport._id,
+                  confirmed: true,
+                })
+              }
+              disabled={confirmMutation.isPending}
+            >
+              Ha
+            </Button>
+
+            <Button
+              variant="danger"
+              className="w-full"
+              onClick={() =>
+                confirmMutation.mutate({
+                  id: latestReport._id,
+                  confirmed: false,
+                })
+              }
+              disabled={confirmMutation.isPending}
+            >
+              Yo'q
+            </Button>
+          </div>
+        </>
+      )}
+
+      {/* In progress */}
+      {latestStatus === "in_progress" && (
+        <>
+          <p className="text-yellow-600">
+            Arizangiz jarayonda. Admin ko'rib chiqmoqda.
+          </p>
+
+          <Button variant="secondary" className="w-full" onClick={close}>
+            Yaxshi
+          </Button>
+        </>
+      )}
+
+      {/* Rejected */}
+      {latestStatus === "rejected" && latestReport?.rejectionReason && (
+        <div className="space-y-1.5">
+          <span className="font-medium text-red-800">Rad etildi:</span>
+
+          {/* Reason */}
+          <p className="bg-red-50 rounded-lg p-3 text-red-800">
+            {latestReport.rejectionReason}
+          </p>
         </div>
-      </div>
+      )}
 
-      <div className="max-w-lg mx-auto px-4 py-6">
-        <p className="text-gray-500 text-sm mb-4">
-          Kundalik xizmatlar holati. Status o'zgartiring yoki admin javobini
-          tasdiqlang.
-        </p>
+      {/* Create Report */}
+      {canCreateReport && (
+        <Button
+          variant="danger"
+          className="w-full"
+          disabled={createMutation.isPending}
+          onClick={() => createMutation.mutate({ serviceId: service._id })}
+        >
+          Mavjud emasga o'zgartirish
+          {createMutation.isPending && "..."}
+        </Button>
+      )}
 
-        <div className="space-y-3">
-          {services.map((service) => {
-            const Icon = ICON_MAP[service.icon] || HelpCircle;
-            const report = getLatestReport(service._id);
-            const status = report
-              ? SERVICE_REPORT_STATUSES[report.status]
-              : null;
+      {/* Unavailable */}
+      {latestStatus === "unavailable" && (
+        <>
+          <p className="text-gray-600">
+            Arizangiz adminlarga yuborildi. Natijani kutib turing.
+          </p>
 
-            return (
-              <div key={service._id} className="bg-white rounded-xl border p-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium">{service.name}</p>
-                      {status && (
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${status.color}`}
-                        >
-                          {status.label}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {/* Agar report "resolved" bo'lsa, tasdiqlash tugmalari */}
-                    {report?.status === "resolved" && (
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() =>
-                            confirmMutation.mutate({
-                              id: report._id,
-                              confirmed: true,
-                            })
-                          }
-                          disabled={confirmMutation.isPending}
-                          className="px-3 py-1.5 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700"
-                        >
-                          Tasdiqlash
-                        </button>
-                        <button
-                          onClick={() =>
-                            confirmMutation.mutate({
-                              id: report._id,
-                              confirmed: false,
-                            })
-                          }
-                          disabled={confirmMutation.isPending}
-                          className="px-3 py-1.5 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200"
-                        >
-                          Rad etish
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Agar hozirgi status "unavailable" bo'lmasa yoki report yo'q bo'lsa */}
-                    {(!report ||
-                      report.status === "confirmed" ||
-                      report.status === "rejected") && (
-                      <button
-                        onClick={() => handleToggleStatus(service._id)}
-                        disabled={createMutation.isPending}
-                        className="px-3 py-1.5 text-xs border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
-                      >
-                        Mavjud emas
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+          <Button variant="secondary" className="w-full" onClick={close}>
+            Yaxshi
+          </Button>
+        </>
+      )}
     </div>
   );
 };
