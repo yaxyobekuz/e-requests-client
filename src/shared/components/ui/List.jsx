@@ -37,6 +37,7 @@ const List = ({ items = [], className = "", itemClassName = "", getKey }) => {
           onClick={item.onClick}
           disabled={item.disabled}
           trailing={item.trailing}
+          subContent={item.subContent}
         />
       ))}
     </div>
@@ -58,6 +59,7 @@ const List = ({ items = [], className = "", itemClassName = "", getKey }) => {
  * @param {string} [props.gradientTo] - Gradient end class (e.g., "to-blue-600")
  * @param {boolean} [props.disabled] - Disabled state (only for button variant)
  * @param {React.ReactNode} [props.trailing] - Trailing content (arrow, badge, etc.)
+ * @param {React.ReactNode} [props.subContent] - Optional content rendered below the main row
  * @returns {JSX.Element}
  */
 const ListItem = ({
@@ -71,35 +73,47 @@ const ListItem = ({
   gradientTo = "to-gray-500",
   disabled = false,
   trailing,
+  subContent,
 }) => {
   const baseStyles =
-    "flex items-center gap-3.5 p-3.5 bg-white rounded-lg border border-transparent transition-all xs:gap-4 xs:p-4";
+    "flex flex-col gap-2 p-3.5 bg-white rounded-lg border border-transparent transition-all xs:gap-3 xs:p-4";
   const interactiveStyles = "active:scale-[0.98]";
   const disabledStyles = "opacity-50 cursor-not-allowed";
 
   const content = (
     <>
-      {Icon && (
-        <div
-          className={cn(
-            "size-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br xs:size-12",
-            gradientFrom,
-            gradientTo,
-          )}
-        >
-          <Icon
-            strokeWidth={1.5}
-            className={cn("size-5 text-white xs:size-6")}
-          />
-        </div>
-      )}
-      <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-900 truncate">{title}</h3>
-        {description && (
-          <p className="text-sm text-gray-500 line-clamp-2">{description}</p>
+      {/* Main content */}
+      <div className="flex items-center gap-3.5 xs:gap-4">
+        {/* Icon */}
+        {Icon && (
+          <div
+            className={cn(
+              "size-9 rounded-xl flex items-center justify-center flex-shrink-0 bg-gradient-to-br xs:size-12",
+              gradientFrom,
+              gradientTo,
+            )}
+          >
+            <Icon
+              strokeWidth={1.5}
+              className={cn("size-5 text-white xs:size-6")}
+            />
+          </div>
         )}
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 truncate">{title}</h3>
+          {description && (
+            <p className="text-sm text-gray-500 line-clamp-2">{description}</p>
+          )}
+        </div>
+
+        {/* Trailing */}
+        {trailing && <div className="flex-shrink-0 ml-2">{trailing}</div>}
       </div>
-      {trailing && <div className="flex-shrink-0 ml-2">{trailing}</div>}
+
+      {/* Sub content */}
+      {subContent && subContent}
     </>
   );
 
@@ -135,4 +149,5 @@ const ListItem = ({
   return <div className={cn(baseStyles, className)}>{content}</div>;
 };
 
+export { ListItem };
 export default List;
