@@ -7,6 +7,7 @@ import RequestsPage from "@/features/requests/pages/RequestsPage";
 import NewRequestPage from "@/features/requests/pages/NewRequestPage";
 import MyRequestsPage from "@/features/requests/pages/MyRequestsPage";
 import ServicesPage from "@/features/services/pages/ServicesPage";
+import MyServiceReportsPage from "@/features/services/pages/MyServiceReportsPage";
 import MskPage from "@/features/msk/pages/MskPage";
 import RegionSetupPage from "@/features/regions/pages/RegionSetupPage";
 import GetStartedPage from "@/features/get-started/pages/GetStartedPage";
@@ -47,6 +48,7 @@ const Routes = () => {
             <Route path="/requests/new" element={<NewRequestPage />} />
             <Route path="/requests/my" element={<MyRequestsPage />} />
             <Route path="/services" element={<ServicesPage />} />
+            <Route path="/services/my-reports" element={<MyServiceReportsPage />} />
             <Route path="/msk" element={<MskPage />} />
           </Route>
         </Route>
