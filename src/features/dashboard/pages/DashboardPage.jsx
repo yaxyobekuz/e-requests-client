@@ -8,7 +8,7 @@ import BottomNavbar from "@/shared/components/ui/BottomNavbar";
 
 const DashboardPage = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 animate__animated animate__fadeIn">
       <div className="container pt-5 space-y-5">
         {/* Top */}
         <h1 className="text-blue-500 font-bold text-xl">e-Murojaat</h1>
