@@ -73,6 +73,13 @@ const RegionSetupPage = () => {
   });
 
   useEffect(() => {
+    if (!profile?.address) return;
+    if (profile.address.region || profile.address.region?._id) {
+      navigate("/dashboard");
+    }
+  }, [navigate, profile]);
+
+  useEffect(() => {
     if (isPrefilled || !profile?.address) return;
 
     const address = profile.address || {};
