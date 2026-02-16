@@ -10,9 +10,11 @@ import RegionGuard from "@/shared/components/guards/RegionGuard";
 import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 
 // Pages
+import MyPage from "@/features/my/pages/MyPage";
 import HomePage from "@/features/home/pages/HomePage";
 import LoginPage from "@/features/auth/pages/LoginPage";
 import RegisterPage from "@/features/auth/pages/RegisterPage";
+import ProfilePage from "@/features/profile/pages/ProfilePage";
 import ServicesPage from "@/features/services/pages/ServicesPage";
 import RequestsPage from "@/features/requests/pages/RequestsPage";
 import MskMyOrdersPage from "@/features/msk/pages/MskMyOrdersPage";
@@ -22,6 +24,7 @@ import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import NewRequestPage from "@/features/requests/pages/NewRequestPage";
 import MyRequestsPage from "@/features/requests/pages/MyRequestsPage";
 import RegionSetupPage from "@/features/regions/pages/RegionSetupPage";
+import ProfileEditPage from "@/features/profile/pages/ProfileEditPage";
 import MskCategoriesPage from "@/features/msk/pages/MskCategoriesPage";
 import EditRequestPage from "@/features/requests/pages/EditRequestPage";
 import MskOrderDetailPage from "@/features/msk/pages/MskOrderDetailPage";
@@ -60,6 +63,9 @@ const Routes = () => {
               path="/services/my-reports"
               element={<MyServiceReportsPage />}
             />
+            <Route path="/my" element={<MyPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/edit" element={<ProfileEditPage />} />
             <Route path="/msk" element={<MskCategoriesPage />} />
             <Route path="/msk/new" element={<NewMskOrderPage />} />
             <Route path="/msk/my-orders" element={<MskMyOrdersPage />} />
