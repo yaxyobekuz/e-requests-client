@@ -141,6 +141,7 @@ const RegionSetupPage = () => {
     mutationFn: (data) => usersAPI.setRegion(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Hudud muvaffaqiyatli saqlandi!");
       navigate("/dashboard");
     },
