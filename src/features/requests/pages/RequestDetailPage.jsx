@@ -1,18 +1,24 @@
 // React
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 // API
 import { requestsAPI } from "@/shared/api/http";
 
-// Tanstack Query
-import { useQuery } from "@tanstack/react-query";
+// Redux
+import { open } from "@/features/modal";
+import { useDispatch } from "react-redux";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Components
 import Card from "@/shared/components/ui/Card";
+import { Button } from "@/shared/components/shadcn/button";
 import BackHeader from "@/shared/components/layout/BackHeader";
+import ModalWrapper from "@/shared/components/ui/ModalWrapper";
+
+// Tanstack Query
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Data
 import { REQUEST_STATUSES } from "@/shared/data/request-statuses";
@@ -25,6 +31,7 @@ const RequestDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const stateRequest = location.state?.request || null;
 
   const { data: requests = [], isLoading } = useQuery({
@@ -61,6 +68,8 @@ const RequestDetailPage = () => {
   }, [request]);
 
   const canEdit = request?.status === "pending";
+  const canCancel =
+    request && !["resolved", "rejected", "cancelled"].includes(request.status);
 
   return (
     <div className="min-h-screen pb-20 space-y-5 animate__animated animate__fadeIn">
@@ -163,8 +172,81 @@ const RequestDetailPage = () => {
                 <p className="text-sm text-gray-700">{request.closingNote}</p>
               </Card>
             )}
+
+            {request.status === "cancelled" && request.cancelReason && (
+              <Card title="Bekor qilish sababi">
+                <p className="text-sm text-gray-700">{request.cancelReason}</p>
+              </Card>
+            )}
+
+            {canCancel && (
+              <Button
+                variant="danger"
+                className="w-full"
+                onClick={() =>
+                  dispatch(open({ modal: "cancelRequest", data: request }))
+                }
+              >
+                Murojaatni bekor qilish
+              </Button>
+            )}
+
+            <ModalWrapper
+              name="cancelRequest"
+              title="Murojaatni bekor qilish"
+              description="Haqiqatan ham bu murojaatni bekor qilmoqchimisiz?"
+            >
+              <CancelRequestForm />
+            </ModalWrapper>
           </>
         )}
+      </div>
+    </div>
+  );
+};
+
+const CancelRequestForm = ({ _id, close, isLoading, setIsLoading }) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [cancelReason, setCancelReason] = React.useState("");
+
+  const handleCancel = async () => {
+    setIsLoading(true);
+    try {
+      await requestsAPI.cancel(_id, {
+        cancelReason: cancelReason.trim() || undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: ["requests", "my"] });
+      close();
+      navigate("/requests/my");
+    } catch {
+      // ignore
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <textarea
+        value={cancelReason}
+        onChange={(e) => setCancelReason(e.target.value)}
+        placeholder="Sabab (ixtiyoriy)"
+        rows={3}
+        className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+      />
+      <div className="flex flex-col gap-3.5 xs:flex-row">
+        <Button variant="secondary" className="w-full" onClick={close}>
+          Yo'q
+        </Button>
+        <Button
+          variant="danger"
+          className="w-full"
+          onClick={handleCancel}
+          disabled={isLoading}
+        >
+          {isLoading ? "Ha..." : "Ha"}
+        </Button>
       </div>
     </div>
   );
