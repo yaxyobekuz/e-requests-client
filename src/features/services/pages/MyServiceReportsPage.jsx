@@ -1,9 +1,5 @@
-
 // Icons
 import * as Icons from "lucide-react";
-
-// Tanstack Query
-import { useQuery } from "@tanstack/react-query";
 
 // API
 import { serviceReportsAPI } from "@/shared/api/http";
@@ -14,6 +10,9 @@ import { formatUzDate } from "@/shared/utils/formatDate";
 // Components
 import List from "@/shared/components/ui/List";
 import BackHeader from "@/shared/components/layout/BackHeader";
+
+// Tanstack Query
+import { useQuery } from "@tanstack/react-query";
 
 // Data
 import { SERVICE_REPORT_STATUSES } from "@/shared/data/request-statuses";
@@ -44,14 +43,16 @@ const MyServiceReportsPage = () => {
           items={reports.map((report) => {
             const status = SERVICE_REPORT_STATUSES[report.status] || {};
             const ServiceIcon = Icons[report.service?.icon] || Icons.HelpCircle;
+            const isUnavailable = report.status === "unavailable";
+            const isInProgress = ["in_progress", "pending_confirmation"].includes(report.status);
 
             return {
               key: report._id,
               title: report.service?.name,
               description: formatUzDate(report.createdAt),
               icon: ServiceIcon,
-              gradientTo: "to-green-700",
-              gradientFrom: "from-green-400",
+              gradientTo: isUnavailable ? "to-red-700" : isInProgress ? "to-yellow-700" : "to-green-700",
+              gradientFrom: isUnavailable ? "from-red-400" : isInProgress ? "from-yellow-400" : "from-green-400",
               trailing: (
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full ${status.color}`}
@@ -59,11 +60,20 @@ const MyServiceReportsPage = () => {
                   {status.label}
                 </span>
               ),
-              subContent: report.rejectionReason ? (
-                <p className="text-sm text-red-500 p-2 bg-red-50 rounded-md">
-                  {report.rejectionReason}
-                </p>
-              ) : null,
+              subContent: (
+                <div className="space-y-2">
+                  {report.rejectionReason && (
+                    <p className="text-sm text-red-500 p-2 bg-red-50 rounded-md">
+                      {report.rejectionReason}
+                    </p>
+                  )}
+                  {report.status === "cancelled" && report.cancelReason && (
+                    <p className="text-sm text-gray-500 p-2 bg-gray-50 rounded-md">
+                      {report.cancelReason}
+                    </p>
+                  )}
+                </div>
+              ),
             };
           })}
         />

@@ -1,8 +1,15 @@
+// React
+import React from "react";
+
 // Toaster
 import { toast } from "sonner";
 
 // Icons
 import * as Icons from "lucide-react";
+
+// Redux
+import { open } from "@/features/modal";
+import { useDispatch } from "react-redux";
 
 // Hooks
 import useModal from "@/shared/hooks/useModal";
@@ -71,12 +78,15 @@ const ServicesPage = () => {
               ? SERVICE_REPORT_STATUSES[report.status]
               : null;
 
+            const isUnavailable = report?.status === "unavailable";
+            const isInProgress = ["in_progress", "pending_confirmation"].includes(report?.status);
+
             return {
               icon: Icon,
               key: service._id,
               title: service.name,
-              gradientTo: "to-green-700",
-              gradientFrom: "from-green-400",
+              gradientTo: isUnavailable ? "to-red-700" : isInProgress ? "to-yellow-700" : "to-green-700",
+              gradientFrom: isUnavailable ? "from-red-400" : isInProgress ? "from-yellow-400" : "from-green-400",
               onClick: () => handleServiceClick(service),
               trailing: status ? (
                 <span
@@ -95,15 +105,34 @@ const ServicesPage = () => {
       </div>
 
       {/* Xizmat holati modal */}
-      <ModalWrapper name={"serviceDetail"} title="Xizmat holati">
+      <ModalWrapper name="serviceDetail" title="Xizmat holati">
         <ServiceDetailModal />
+      </ModalWrapper>
+
+      {/* Bekor qilish modali */}
+      <ModalWrapper
+        name="cancelReport"
+        title="Arizani bekor qilish"
+        description="Haqiqatan ham bu arizani bekor qilmoqchimisiz?"
+      >
+        <CancelReportForm />
       </ModalWrapper>
     </div>
   );
 };
 
-const ServiceDetailModal = ({ service, latestReport, close }) => {
+const ServiceDetailModal = ({ service, latestReport: initialReport, close }) => {
+  const dispatch = useDispatch();
   const queryClient = useQueryClient();
+
+  const { data: myReports = [] } = useQuery({
+    queryKey: ["service-reports", "my"],
+    queryFn: () => serviceReportsAPI.getMyReports().then((res) => res.data),
+  });
+
+  const latestReport = service
+    ? myReports.find((r) => r.service?._id === service._id) || initialReport
+    : initialReport;
 
   const createMutation = useMutation({
     mutationFn: (data) => serviceReportsAPI.create(data),
@@ -139,10 +168,15 @@ const ServiceDetailModal = ({ service, latestReport, close }) => {
   const Icon = Icons[service.icon] || Icons.HelpCircle;
   const latestStatus = latestReport?.status;
 
+  const canCancel =
+    latestReport &&
+    !["pending_confirmation", "confirmed", "rejected", "cancelled"].includes(latestStatus);
+
   const canCreateReport =
     !latestStatus ||
     latestStatus === "confirmed" ||
-    latestStatus === "rejected";
+    latestStatus === "rejected" ||
+    latestStatus === "cancelled";
 
   return (
     <div className="space-y-4">
@@ -233,16 +267,81 @@ const ServiceDetailModal = ({ service, latestReport, close }) => {
 
       {/* Unavailable */}
       {latestStatus === "unavailable" && (
-        <>
-          <p className="text-gray-600">
-            Arizangiz adminlarga yuborildi. Natijani kutib turing.
-          </p>
-
-          <Button variant="secondary" className="w-full" onClick={close}>
-            Yaxshi
-          </Button>
-        </>
+        <p className="text-gray-600">
+          Arizangiz adminlarga yuborildi. Natijani kutib turing.
+        </p>
       )}
+
+      {/* Cancelled */}
+      {latestStatus === "cancelled" && latestReport?.cancelReason && (
+        <div className="space-y-1.5">
+          <span className="font-medium text-gray-700">
+            Bekor qilish sababi:
+          </span>
+          <p className="bg-gray-50 rounded-lg p-3 text-gray-700">
+            {latestReport.cancelReason}
+          </p>
+        </div>
+      )}
+
+      {/* Cancel button */}
+      {canCancel && (
+        <Button
+          variant="danger"
+          className="w-full"
+          onClick={() => {
+            close();
+            dispatch(open({ modal: "cancelReport", data: latestReport }));
+          }}
+        >
+          Arizani bekor qilish
+        </Button>
+      )}
+    </div>
+  );
+};
+
+const CancelReportForm = ({ _id, close, isLoading, setIsLoading }) => {
+  const queryClient = useQueryClient();
+  const [cancelReason, setCancelReason] = React.useState("");
+
+  const handleCancel = async () => {
+    setIsLoading(true);
+    try {
+      await serviceReportsAPI.cancel(_id, {
+        cancelReason: cancelReason.trim() || undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: ["service-reports", "my"] });
+      close();
+    } catch {
+      // ignore
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <textarea
+        value={cancelReason}
+        onChange={(e) => setCancelReason(e.target.value)}
+        placeholder="Sabab (ixtiyoriy)"
+        rows={3}
+        className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+      />
+      <div className="flex flex-col gap-3.5 xs:flex-row">
+        <Button variant="secondary" className="w-full" onClick={close}>
+          Yo'q
+        </Button>
+        <Button
+          variant="danger"
+          className="w-full"
+          onClick={handleCancel}
+          disabled={isLoading}
+        >
+          {isLoading ? "Ha..." : "Ha"}
+        </Button>
+      </div>
     </div>
   );
 };
