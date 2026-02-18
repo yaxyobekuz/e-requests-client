@@ -65,6 +65,7 @@ export const requestsAPI = {
   create: (data) => http.post("/api/requests", data),
   getMyRequests: () => http.get("/api/requests/my"),
   update: (id, data) => http.put(`/api/requests/${id}`, data),
+  cancel: (id, data) => http.put(`/api/requests/${id}/cancel`, data),
 };
 
 export const servicesAPI = {
@@ -75,6 +76,7 @@ export const serviceReportsAPI = {
   create: (data) => http.post("/api/service-reports", data),
   getMyReports: () => http.get("/api/service-reports/my"),
   confirm: (id, data) => http.put(`/api/service-reports/${id}/confirm`, data),
+  cancel: (id, data) => http.put(`/api/service-reports/${id}/cancel`, data),
 };
 
 export const mskAPI = {
@@ -83,4 +85,5 @@ export const mskAPI = {
   getMyOrders: () => http.get("/api/msk/orders/my"),
   updateOrder: (id, data) => http.put(`/api/msk/orders/${id}`, data),
   confirmOrder: (id, data) => http.put(`/api/msk/orders/${id}/confirm`, data),
+  cancelOrder: (id, data) => http.put(`/api/msk/orders/${id}/cancel`, data),
 };
