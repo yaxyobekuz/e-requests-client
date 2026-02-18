@@ -1,18 +1,24 @@
 // React
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 
 // API
 import { mskAPI } from "@/shared/api/http";
 
-// Tanstack Query
-import { useQuery } from "@tanstack/react-query";
+// Redux
+import { open } from "@/features/modal";
+import { useDispatch } from "react-redux";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
 
 // Components
 import Card from "@/shared/components/ui/Card";
+import { Button } from "@/shared/components/shadcn/button";
 import BackHeader from "@/shared/components/layout/BackHeader";
+import ModalWrapper from "@/shared/components/ui/ModalWrapper";
+
+// Tanstack Query
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Data
 import { MSK_ORDER_STATUSES } from "@/shared/data/request-statuses";
@@ -24,6 +30,7 @@ const MskOrderDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const stateOrder = location.state?.order || null;
 
   const { data: orders = [], isLoading } = useQuery({
@@ -56,6 +63,9 @@ const MskOrderDetailPage = () => {
   }, [order]);
 
   const canEdit = order?.status === "pending";
+  const canCancel =
+    order &&
+    !["resolved", "confirmed", "rejected", "cancelled"].includes(order.status);
 
   return (
     <div className="min-h-screen pb-20 space-y-5 animate__animated animate__fadeIn">
@@ -148,8 +158,81 @@ const MskOrderDetailPage = () => {
                 <p className="text-sm text-gray-700">{order.rejectionReason}</p>
               </Card>
             )}
+
+            {order.status === "cancelled" && order.cancelReason && (
+              <Card title="Bekor qilish sababi">
+                <p className="text-sm text-gray-700">{order.cancelReason}</p>
+              </Card>
+            )}
+
+            {canCancel && (
+              <Button
+                variant="danger"
+                className="w-full"
+                onClick={() =>
+                  dispatch(open({ modal: "cancelOrder", data: order }))
+                }
+              >
+                Buyurtmani bekor qilish
+              </Button>
+            )}
+
+            <ModalWrapper
+              name="cancelOrder"
+              title="Buyurtmani bekor qilish"
+              description="Haqiqatan ham bu buyurtmani bekor qilmoqchimisiz?"
+            >
+              <CancelOrderForm />
+            </ModalWrapper>
           </>
         )}
+      </div>
+    </div>
+  );
+};
+
+const CancelOrderForm = ({ _id, close, isLoading, setIsLoading }) => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [cancelReason, setCancelReason] = React.useState("");
+
+  const handleCancel = async () => {
+    setIsLoading(true);
+    try {
+      await mskAPI.cancelOrder(_id, {
+        cancelReason: cancelReason.trim() || undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: ["msk", "orders", "my"] });
+      close();
+      navigate("/msk/my-orders");
+    } catch {
+      // ignore
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <textarea
+        value={cancelReason}
+        onChange={(e) => setCancelReason(e.target.value)}
+        placeholder="Sabab (ixtiyoriy)"
+        rows={3}
+        className="w-full px-3 py-2 border rounded-lg text-sm resize-none"
+      />
+      <div className="flex flex-col gap-3.5 xs:flex-row">
+        <Button variant="secondary" className="w-full" onClick={close}>
+          Yo'q
+        </Button>
+        <Button
+          variant="danger"
+          className="w-full"
+          onClick={handleCancel}
+          disabled={isLoading}
+        >
+          {isLoading ? "Ha..." : "Ha"}
+        </Button>
       </div>
     </div>
   );
