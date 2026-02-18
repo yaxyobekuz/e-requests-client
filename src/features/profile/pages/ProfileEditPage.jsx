@@ -116,7 +116,7 @@ const ProfileEditPage = () => {
                 o'ting.
               </p>
 
-              <Button variant="outline" asChild className="w-full">
+              <Button variant="secondary" asChild className="w-full">
                 <Link to="/region-setup">Hududni o'zgartirish</Link>
               </Button>
             </Card>
