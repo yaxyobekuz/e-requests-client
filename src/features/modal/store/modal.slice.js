@@ -9,6 +9,9 @@ const initialState = {
   editRequest: initialModalData,
   mskOrder: initialModalData,
   serviceDetail: initialModalData,
+  cancelRequest: initialModalData,
+  cancelOrder: initialModalData,
+  cancelReport: initialModalData,
 };
 
 export const modalSlice = createSlice({
