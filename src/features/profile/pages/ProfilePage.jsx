@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import Card from "@/shared/components/ui/Card";
 import { Button } from "@/shared/components/shadcn/button";
 import BottomNavbar from "@/shared/components/ui/BottomNavbar";
+import { LogOut } from "lucide-react";
 
 const ProfilePage = () => {
   const {
@@ -42,6 +43,11 @@ const ProfilePage = () => {
   const streetName = address?.street?.name || address?.streetCustom || "-";
   const houseNumber = address?.houseNumber || "-";
   const apartmentNumber = address?.apartment?.trim() || "";
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/login";
+  };
 
   return (
     <div className="min-h-screen pt-5 pb-20 space-y-5 animate__animated animate__fadeIn">
@@ -120,9 +126,19 @@ const ProfilePage = () => {
               )}
             </Card>
 
-            <Button className="w-full" asChild>
-              <Link to="/profile/edit">Tahrirlash</Link>
-            </Button>
+            <div className="flex flex-col gap-3.5 xs:flex-row">
+              <Button className="w-full" asChild>
+                <Link to="/profile/edit">Tahrirlash</Link>
+              </Button>
+
+              <Button
+                onClick={handleLogout}
+                variant="danger"
+                className="w-full"
+              >
+                Chiqish
+              </Button>
+            </div>
           </>
         )}
       </div>
