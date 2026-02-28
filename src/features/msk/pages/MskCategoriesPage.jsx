@@ -34,6 +34,7 @@ const MskCategoriesPage = () => {
         />
 
         <List
+          gridCards
           className="mb-6"
           items={categories.map((cat) => {
             const Icon = Icons[cat.icon] || Icons.HelpCircle;

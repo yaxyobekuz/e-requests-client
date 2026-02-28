@@ -18,7 +18,10 @@ import BackHeader from "@/shared/components/layout/BackHeader";
 import ModalWrapper from "@/shared/components/ui/ModalWrapper";
 
 // Tanstack Query
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+
+// Toast
+import { toast } from "sonner";
 
 // Data
 import { MSK_ORDER_STATUSES } from "@/shared/data/request-statuses";
@@ -62,10 +65,27 @@ const MskOrderDetailPage = () => {
     return parts.join(", ");
   }, [order]);
 
+  const queryClient = useQueryClient();
+
+  const confirmMutation = useMutation({
+    mutationFn: ({ confirmed }) => mskAPI.confirmOrder(order._id, { confirmed }),
+    onSuccess: (_, { confirmed }) => {
+      queryClient.invalidateQueries({ queryKey: ["msk", "orders", "my"] });
+      toast.success(
+        confirmed
+          ? "Buyurtma tasdiqlandi!"
+          : "Muammo hali hal etilmagan deb belgilandi",
+      );
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || "Xatolik yuz berdi");
+    },
+  });
+
   const canEdit = order?.status === "pending";
   const canCancel =
     order &&
-    !["resolved", "confirmed", "rejected", "cancelled"].includes(order.status);
+    !["pending_confirmation", "confirmed", "rejected", "cancelled"].includes(order.status);
 
   return (
     <div className="min-h-screen pb-20 space-y-5 animate__animated animate__fadeIn">
@@ -162,6 +182,31 @@ const MskOrderDetailPage = () => {
             {order.status === "cancelled" && order.cancelReason && (
               <Card title="Bekor qilish sababi">
                 <p className="text-sm text-gray-700">{order.cancelReason}</p>
+              </Card>
+            )}
+
+            {order.status === "pending_confirmation" && (
+              <Card>
+                <p className="text-gray-600 mb-4">
+                  Admin muammoni bartaraf etilganini bildirdi. Tasdiqlaysizmi?
+                </p>
+                <div className="flex flex-col gap-3.5 xs:flex-row">
+                  <Button
+                    className="w-full"
+                    onClick={() => confirmMutation.mutate({ confirmed: true })}
+                    disabled={confirmMutation.isPending}
+                  >
+                    Ha
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="w-full"
+                    onClick={() => confirmMutation.mutate({ confirmed: false })}
+                    disabled={confirmMutation.isPending}
+                  >
+                    Yo'q
+                  </Button>
+                </div>
               </Card>
             )}
 
