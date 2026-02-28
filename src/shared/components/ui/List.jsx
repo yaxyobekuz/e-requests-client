@@ -11,9 +11,22 @@ import { cn } from "@/shared/utils/cn";
  * @param {function} [props.getKey] - Custom key resolver: (item, index) => key
  * @returns {JSX.Element}
  */
-const List = ({ items = [], className = "", itemClassName = "", getKey }) => {
+const List = ({
+  items = [],
+  className = "",
+  itemClassName = "",
+  getKey,
+  gridCards = false,
+}) => {
   return (
-    <div className={cn("space-y-1", className)}>
+    <div
+      className={cn(
+        gridCards
+          ? "grid gap-1 md:grid-cols-2 lg:grid-cols-3 md:gap-4"
+          : "space-y-1",
+        className,
+      )}
+    >
       {items.map((item, index) => (
         <ListItem
           key={
@@ -23,8 +36,8 @@ const List = ({ items = [], className = "", itemClassName = "", getKey }) => {
           }
           className={cn(
             itemClassName,
-            index === 0 && "rounded-t-2xl",
-            index === items.length - 1 && "rounded-b-2xl",
+            index === 0 && !gridCards && "rounded-t-2xl",
+            index === items.length - 1 && !gridCards && "rounded-b-2xl",
             item.className,
           )}
           title={item.title}
