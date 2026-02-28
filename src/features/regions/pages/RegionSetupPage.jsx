@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 // Router
 import { useNavigate } from "react-router-dom";
 
+// Icons
+import { MapPin, ChevronRight, Check } from "lucide-react";
+
 // Data
 import { HOUSE_TYPES } from "@/shared/data/house-types";
 
@@ -25,25 +28,38 @@ const STEPS = [
 ];
 
 const StepBar = ({ currentStep }) => (
-  <div className="flex items-center justify-center gap-2 mb-8">
-    {STEPS.map((step) => (
-      <div key={step.id} className="flex items-center gap-2">
-        <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-            step.id <= currentStep
-              ? "bg-blue-600 text-white"
-              : "bg-gray-200 text-gray-500"
-          }`}
-        >
-          {step.id}
-        </div>
-        {step.id < STEPS.length && (
+  <div className="flex items-center justify-between w-full relative mb-12">
+    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 rounded-full z-0"></div>
+    <div 
+      className="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-blue-500 rounded-full z-0 transition-all duration-500 ease-out"
+      style={{ width: `${((currentStep - 1) / (STEPS.length - 1)) * 100}%` }}
+    ></div>
+    
+    {STEPS.map((step) => {
+      const isCompleted = step.id < currentStep;
+      const isCurrent = step.id === currentStep;
+      
+      return (
+        <div key={step.id} className="relative z-10 flex flex-col items-center">
           <div
-            className={`w-8 h-0.5 ${step.id < currentStep ? "bg-blue-600" : "bg-gray-200"}`}
-          />
-        )}
-      </div>
-    ))}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 shadow-sm ${
+              isCompleted
+                ? "bg-blue-600 text-white ring-4 ring-blue-50 scale-95"
+                : isCurrent
+                ? "bg-white text-blue-600 border-2 border-blue-600 ring-4 ring-blue-50 scale-110"
+                : "bg-white text-slate-400 border border-slate-200"
+            }`}
+          >
+            {isCompleted ? <Check className="w-5 h-5" /> : step.id}
+          </div>
+          <span className={`absolute -bottom-6 text-xs font-medium whitespace-nowrap transition-colors ${
+            isCurrent ? "text-blue-600" : isCompleted ? "text-slate-600" : "text-slate-400"
+          }`}>
+            {step.label}
+          </span>
+        </div>
+      );
+    })}
   </div>
 );
 
@@ -236,20 +252,25 @@ const RegionSetupPage = () => {
     switch (step) {
       case 1:
         return (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Viloyatni tanlang</h2>
-            <div className="space-y-2 max-h-80 overflow-y-auto">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Viloyatni tanlang</h2>
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-2 p-1 custom-scrollbar">
               {regions.map((r) => (
                 <button
                   key={r._id}
                   onClick={() => handleSelect("region", r._id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                  className={`w-full text-left px-5 py-4 rounded-xl border transition-all flex items-center justify-between group ${
                     form.region === r._id
-                      ? "border-blue-600 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:bg-gray-50"
+                      ? "border-blue-500 bg-blue-50/50 text-blue-700 shadow-sm ring-1 ring-blue-500"
+                      : "border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700"
                   }`}
                 >
-                  {r.name}
+                  <span className="font-medium">{r.name}</span>
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                    form.region === r._id ? "border-blue-500 bg-blue-500" : "border-slate-300 group-hover:border-blue-400"
+                  }`}>
+                    {form.region === r._id && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                  </div>
                 </button>
               ))}
             </div>
@@ -258,22 +279,27 @@ const RegionSetupPage = () => {
 
       case 2:
         return (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">
-              Tuman/Shaharni tanlang
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">
+              Tuman / Shaharni tanlang
             </h2>
-            <div className="space-y-2 max-h-80 overflow-y-auto">
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-2 p-1 custom-scrollbar">
               {districts.map((d) => (
                 <button
                   key={d._id}
                   onClick={() => handleSelect("district", d._id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                  className={`w-full text-left px-5 py-4 rounded-xl border transition-all flex items-center justify-between group ${
                     form.district === d._id
-                      ? "border-blue-600 bg-blue-50 text-blue-700"
-                      : "border-gray-200 hover:bg-gray-50"
+                      ? "border-blue-500 bg-blue-50/50 text-blue-700 shadow-sm ring-1 ring-blue-500"
+                      : "border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700"
                   }`}
                 >
-                  {d.name}
+                  <span className="font-medium">{d.name}</span>
+                  <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                    form.district === d._id ? "border-blue-500 bg-blue-500" : "border-slate-300 group-hover:border-blue-400"
+                  }`}>
+                    {form.district === d._id && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                  </div>
                 </button>
               ))}
             </div>
@@ -282,22 +308,27 @@ const RegionSetupPage = () => {
 
       case 3:
         return (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Mahallani tanlang</h2>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Mahallani tanlang</h2>
             {!form.isNeighborhoodCustom ? (
               <>
-                <div className="space-y-2 max-h-64 overflow-y-auto mb-3">
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-2 p-1 mb-4 custom-scrollbar">
                   {neighborhoods.map((n) => (
                     <button
                       key={n._id}
                       onClick={() => handleSelect("neighborhood", n._id)}
-                      className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      className={`w-full text-left px-5 py-4 rounded-xl border transition-all flex items-center justify-between group ${
                         form.neighborhood === n._id
-                          ? "border-blue-600 bg-blue-50 text-blue-700"
-                          : "border-gray-200 hover:bg-gray-50"
+                          ? "border-blue-500 bg-blue-50/50 text-blue-700 shadow-sm ring-1 ring-blue-500"
+                          : "border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700"
                       }`}
                     >
-                      {n.name}
+                      <span className="font-medium">{n.name}</span>
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                        form.neighborhood === n._id ? "border-blue-500 bg-blue-500" : "border-slate-300 group-hover:border-blue-400"
+                      }`}>
+                        {form.neighborhood === n._id && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -309,25 +340,29 @@ const RegionSetupPage = () => {
                       neighborhood: "",
                     }))
                   }
-                  className="w-full text-left px-4 py-3 rounded-lg border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50"
+                  className="w-full text-left px-5 py-4 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50/30 font-medium transition-all"
                 >
-                  Ro'yxatda yo'q — o'zim kiritaman
+                  + Ro'yxatda yo'q — o'zim kiritaman
                 </button>
               </>
             ) : (
-              <>
-                <input
-                  type="text"
-                  value={form.neighborhoodCustom}
-                  onChange={(e) =>
-                    setForm((p) => ({
-                      ...p,
-                      neighborhoodCustom: e.target.value,
-                    }))
-                  }
-                  placeholder="Mahalla nomini kiriting"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
-                />
+              <div className="space-y-4">
+                <div className="space-y-1.5 focus-within:text-blue-600 transition-colors">
+                  <label className="block text-sm font-semibold text-slate-700">Mahalla nomi</label>
+                  <input
+                    type="text"
+                    value={form.neighborhoodCustom}
+                    onChange={(e) =>
+                      setForm((p) => ({
+                        ...p,
+                        neighborhoodCustom: e.target.value,
+                      }))
+                    }
+                    placeholder="Masalan: Navoiy"
+                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                    autoFocus
+                  />
+                </div>
                 <button
                   onClick={() =>
                     setForm((p) => ({
@@ -336,33 +371,38 @@ const RegionSetupPage = () => {
                       neighborhoodCustom: "",
                     }))
                   }
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1"
                 >
-                  Ro'yxatdan tanlash
+                  <ChevronRight className="w-4 h-4 rotate-180" /> Ro'yxatdan tanlashga qaytish
                 </button>
-              </>
+              </div>
             )}
           </div>
         );
 
       case 4:
         return (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">Ko'chani tanlang</h2>
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">Ko'chani tanlang</h2>
             {!form.isStreetCustom ? (
               <>
-                <div className="space-y-2 max-h-64 overflow-y-auto mb-3">
+                <div className="space-y-2 max-h-64 overflow-y-auto pr-2 p-1 mb-4 custom-scrollbar">
                   {streets.map((s) => (
                     <button
                       key={s._id}
                       onClick={() => handleSelect("street", s._id)}
-                      className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
+                      className={`w-full text-left px-5 py-4 rounded-xl border transition-all flex items-center justify-between group ${
                         form.street === s._id
-                          ? "border-blue-600 bg-blue-50 text-blue-700"
-                          : "border-gray-200 hover:bg-gray-50"
+                          ? "border-blue-500 bg-blue-50/50 text-blue-700 shadow-sm ring-1 ring-blue-500"
+                          : "border-slate-200 hover:border-blue-300 hover:bg-slate-50 text-slate-700"
                       }`}
                     >
-                      {s.name}
+                      <span className="font-medium">{s.name}</span>
+                      <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${
+                        form.street === s._id ? "border-blue-500 bg-blue-500" : "border-slate-300 group-hover:border-blue-400"
+                      }`}>
+                        {form.street === s._id && <div className="w-2 h-2 rounded-full bg-white"></div>}
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -374,22 +414,26 @@ const RegionSetupPage = () => {
                       street: "",
                     }))
                   }
-                  className="w-full text-left px-4 py-3 rounded-lg border border-dashed border-gray-300 text-gray-500 hover:bg-gray-50"
+                  className="w-full text-left px-5 py-4 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:text-blue-600 hover:border-blue-400 hover:bg-blue-50/30 font-medium transition-all"
                 >
-                  Ro'yxatda yo'q — o'zim kiritaman
+                  + Ro'yxatda yo'q — o'zim kiritaman
                 </button>
               </>
             ) : (
-              <>
-                <input
-                  type="text"
-                  value={form.streetCustom}
-                  onChange={(e) =>
-                    setForm((p) => ({ ...p, streetCustom: e.target.value }))
-                  }
-                  placeholder="Ko'cha nomini kiriting"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
-                />
+              <div className="space-y-4">
+                <div className="space-y-1.5 focus-within:text-blue-600 transition-colors">
+                  <label className="block text-sm font-semibold text-slate-700">Ko'cha nomi</label>
+                  <input
+                    type="text"
+                    value={form.streetCustom}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, streetCustom: e.target.value }))
+                    }
+                    placeholder="Masalan: Mustaqillik"
+                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium"
+                    autoFocus
+                  />
+                </div>
                 <button
                   onClick={() =>
                     setForm((p) => ({
@@ -398,24 +442,24 @@ const RegionSetupPage = () => {
                       streetCustom: "",
                     }))
                   }
-                  className="text-sm text-blue-600 hover:underline"
+                  className="text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors flex items-center gap-1"
                 >
-                  Ro'yxatdan tanlash
+                  <ChevronRight className="w-4 h-4 rotate-180" /> Ro'yxatdan tanlashga qaytish
                 </button>
-              </>
+              </div>
             )}
           </div>
         );
 
       case 5:
         return (
-          <div>
-            <h2 className="text-lg font-semibold mb-4">
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl font-bold text-slate-800 mb-6">
               Uy ma'lumotlarini kiriting
             </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">
                   Uy turi
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -429,10 +473,10 @@ const RegionSetupPage = () => {
                           apartment: "",
                         }))
                       }
-                      className={`px-4 py-3 rounded-lg border text-sm transition-colors ${
+                      className={`px-4 py-3.5 rounded-xl border font-medium transition-all ${
                         form.houseType === ht.id
-                          ? "border-blue-600 bg-blue-50 text-blue-700"
-                          : "border-gray-200 hover:bg-gray-50"
+                          ? "border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500/20"
+                          : "border-slate-200 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                       }`}
                     >
                       {ht.label}
@@ -441,8 +485,8 @@ const RegionSetupPage = () => {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
+              <div className="space-y-1.5 focus-within:text-blue-600 transition-colors">
+                <label className="block text-sm font-semibold text-slate-700">
                   Uy raqami
                 </label>
                 <input
@@ -451,14 +495,14 @@ const RegionSetupPage = () => {
                   onChange={(e) =>
                     setForm((p) => ({ ...p, houseNumber: e.target.value }))
                   }
-                  placeholder="Uy raqamini kiriting"
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masalan: 42A"
+                  className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-900"
                 />
               </div>
 
               {form.houseType === "apartment" && (
-                <div>
-                  <label className="block text-sm font-medium mb-1">
+                <div className="space-y-1.5 focus-within:text-blue-600 transition-colors animate-in fade-in slide-in-from-top-2">
+                  <label className="block text-sm font-semibold text-slate-700">
                     Xonadon raqami
                   </label>
                   <input
@@ -467,8 +511,8 @@ const RegionSetupPage = () => {
                     onChange={(e) =>
                       setForm((p) => ({ ...p, apartment: e.target.value }))
                     }
-                    placeholder="Xonadon raqamini kiriting"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Masalan: 12"
+                    className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all font-medium text-slate-900"
                   />
                 </div>
               )}
@@ -482,25 +526,37 @@ const RegionSetupPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-8">
-      <div className="max-w-md mx-auto">
-        <h1 className="text-xl font-bold text-center mb-2">
-          Yashash joyingizni belgilang
-        </h1>
-        <p className="text-gray-500 text-center text-sm mb-6">
-          Xizmatlardan foydalanish uchun hududingizni kiriting
-        </p>
+    <div className="min-h-screen bg-slate-50 relative overflow-hidden flex items-center justify-center p-4">
+      {/* Background decorations */}
+      <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-blue-600/10 to-transparent"></div>
+      <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+      <div className="absolute top-40 -left-40 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
 
-        <StepBar currentStep={step} />
+      <div className="w-full max-w-xl mx-auto relative z-10">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30 mb-6">
+            <MapPin className="w-7 h-7" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-slate-900 mb-3 tracking-tight">
+            Yashash joyingiz
+          </h1>
+          <p className="text-slate-500 text-lg">
+            Xizmatlardan foydalanish uchun manzilingizni aniqlang
+          </p>
+        </div>
 
-        <div className="bg-white rounded-xl p-5 shadow-sm border">
-          {renderStep()}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-slate-200/50 border border-white p-6 sm:p-10 transition-all">
+          <StepBar currentStep={step} />
 
-          <div className="flex gap-3 mt-6">
+          <div className="min-h-[350px]">
+            {renderStep()}
+          </div>
+
+          <div className="flex gap-4 mt-10 pt-6 border-t border-slate-100">
             {step > 1 && (
               <button
                 onClick={handleBack}
-                className="flex-1 py-2.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+                className="py-3.5 px-6 border-2 border-slate-200 text-slate-600 rounded-xl font-semibold hover:bg-slate-50 hover:text-slate-900 transition-colors focus:ring-4 focus:ring-slate-100"
               >
                 Orqaga
               </button>
@@ -508,13 +564,22 @@ const RegionSetupPage = () => {
             <button
               onClick={handleNext}
               disabled={saveMutation.isPending}
-              className="flex-1 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="flex-1 relative group overflow-hidden bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold py-3.5 flex justify-center items-center gap-2 focus:ring-4 focus:ring-blue-500/30 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              {saveMutation.isPending
-                ? "Saqlanmoqda..."
-                : step === 5
-                  ? "Saqlash"
-                  : "Keyingi"}
+              <div className="absolute inset-0 w-full h-full bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+              <span className="relative z-10 flex items-center gap-2">
+                {saveMutation.isPending
+                  ? "Saqlanmoqda..."
+                  : step === 5
+                    ? "Saqlash va davom etish"
+                    : "Keyingisi"}
+                {step < 5 && !saveMutation.isPending && (
+                  <ChevronRight className="w-5 h-5" />
+                )}
+              </span>
+              {saveMutation.isPending && (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin relative z-10"></div>
+              )}
             </button>
           </div>
         </div>
