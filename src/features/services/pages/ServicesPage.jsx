@@ -71,6 +71,7 @@ const ServicesPage = () => {
 
         {/* Xizmatlar ro'yxati */}
         <List
+          gridCards
           items={services.map((service) => {
             const Icon = Icons[service.icon] || Icons.HelpCircle;
             const report = getLatestReport(service._id);
@@ -79,14 +80,25 @@ const ServicesPage = () => {
               : null;
 
             const isUnavailable = report?.status === "unavailable";
-            const isInProgress = ["in_progress", "pending_confirmation"].includes(report?.status);
+            const isInProgress = [
+              "in_progress",
+              "pending_confirmation",
+            ].includes(report?.status);
 
             return {
               icon: Icon,
               key: service._id,
               title: service.name,
-              gradientTo: isUnavailable ? "to-red-700" : isInProgress ? "to-yellow-700" : "to-green-700",
-              gradientFrom: isUnavailable ? "from-red-400" : isInProgress ? "from-yellow-400" : "from-green-400",
+              gradientTo: isUnavailable
+                ? "to-red-700"
+                : isInProgress
+                  ? "to-yellow-700"
+                  : "to-green-700",
+              gradientFrom: isUnavailable
+                ? "from-red-400"
+                : isInProgress
+                  ? "from-yellow-400"
+                  : "from-green-400",
               onClick: () => handleServiceClick(service),
               trailing: status ? (
                 <span
@@ -121,7 +133,11 @@ const ServicesPage = () => {
   );
 };
 
-const ServiceDetailModal = ({ service, latestReport: initialReport, close }) => {
+const ServiceDetailModal = ({
+  service,
+  latestReport: initialReport,
+  close,
+}) => {
   const dispatch = useDispatch();
   const queryClient = useQueryClient();
 
@@ -170,7 +186,9 @@ const ServiceDetailModal = ({ service, latestReport: initialReport, close }) => 
 
   const canCancel =
     latestReport &&
-    !["pending_confirmation", "confirmed", "rejected", "cancelled"].includes(latestStatus);
+    !["pending_confirmation", "confirmed", "rejected", "cancelled"].includes(
+      latestStatus,
+    );
 
   const canCreateReport =
     !latestStatus ||
