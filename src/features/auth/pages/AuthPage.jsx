@@ -88,8 +88,8 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen flex bg-slate-50 relative overflow-hidden">
       {/* Left side: form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative z-10">
-        <div className="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:shadow-none sm:bg-transparent border border-slate-100 sm:border-none p-8 sm:p-0">
+      <div className="w-full lg:w-1/2 flex items-center justify-center sm:p-12 relative z-10">
+        <div className="w-full max-w-md p-5 sm:bg-transparent border border-slate-100 sm:border-none sm:p-0">
           {hasBack && (
             <button
               type="button"
