@@ -12,8 +12,7 @@ import { Routes as RoutesWrapper, Route, Navigate } from "react-router-dom";
 // Pages
 import MyPage from "@/features/my/pages/MyPage";
 import HomePage from "@/features/home/pages/HomePage";
-import LoginPage from "@/features/auth/pages/LoginPage";
-import RegisterPage from "@/features/auth/pages/RegisterPage";
+import AuthPage from "@/features/auth/pages/AuthPage";
 import ProfilePage from "@/features/profile/pages/ProfilePage";
 import ServicesPage from "@/features/services/pages/ServicesPage";
 import RequestsPage from "@/features/requests/pages/RequestsPage";
@@ -41,8 +40,9 @@ const Routes = () => {
 
       {/* Guest only routes */}
       <Route element={<GuestGuard />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        <Route path="/register" element={<Navigate to="/auth" replace />} />
       </Route>
 
       {/* Protected routes */}
