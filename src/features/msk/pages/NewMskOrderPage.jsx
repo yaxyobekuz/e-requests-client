@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // API
-import { authAPI, mskAPI } from "@/shared/api/http";
+import { authAPI, mskAPI } from "@/shared/api";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -180,3 +180,4 @@ const NewMskOrderPage = () => {
 };
 
 export default NewMskOrderPage;
+

@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 
 // API
-import { mskAPI } from "@/shared/api/http";
+import { mskAPI } from "@/shared/api";
 
 // Redux
 import { open } from "@/features/modal";
@@ -284,3 +284,4 @@ const CancelOrderForm = ({ _id, close, isLoading, setIsLoading }) => {
 };
 
 export default MskOrderDetailPage;
+

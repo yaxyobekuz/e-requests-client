@@ -21,7 +21,7 @@ import ModalWrapper from "@/shared/components/ui/ModalWrapper";
 import BackHeader from "@/shared/components/layout/BackHeader";
 
 // API
-import { servicesAPI, serviceReportsAPI } from "@/shared/api/http";
+import { servicesAPI, serviceReportsAPI } from "@/shared/api";
 
 // Data
 import { SERVICE_REPORT_STATUSES } from "@/shared/data/request-statuses";
@@ -365,3 +365,4 @@ const CancelReportForm = ({ _id, close, isLoading, setIsLoading }) => {
 };
 
 export default ServicesPage;
+

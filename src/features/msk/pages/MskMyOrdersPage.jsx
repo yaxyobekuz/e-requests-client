@@ -5,7 +5,7 @@ import * as Icons from "lucide-react";
 import { Link } from "react-router-dom";
 
 // API
-import { mskAPI } from "@/shared/api/http";
+import { mskAPI } from "@/shared/api";
 
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
@@ -102,3 +102,4 @@ const MskMyOrdersPage = () => {
 };
 
 export default MskMyOrdersPage;
+

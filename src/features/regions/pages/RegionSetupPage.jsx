@@ -14,7 +14,7 @@ import { MapPin, ChevronRight, Check } from "lucide-react";
 import { HOUSE_TYPES } from "@/shared/data/house-types";
 
 // API
-import { regionsAPI, usersAPI } from "@/shared/api/http";
+import { regionsAPI, usersAPI } from "@/shared/api";
 
 // Tanstack Query
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -589,3 +589,4 @@ const RegionSetupPage = () => {
 };
 
 export default RegionSetupPage;
+

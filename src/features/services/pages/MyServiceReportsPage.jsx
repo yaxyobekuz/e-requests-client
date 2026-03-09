@@ -2,7 +2,7 @@
 import * as Icons from "lucide-react";
 
 // API
-import { serviceReportsAPI } from "@/shared/api/http";
+import { serviceReportsAPI } from "@/shared/api";
 
 // Utils
 import { formatUzDate } from "@/shared/utils/formatDate";
@@ -83,3 +83,4 @@ const MyServiceReportsPage = () => {
 };
 
 export default MyServiceReportsPage;
+

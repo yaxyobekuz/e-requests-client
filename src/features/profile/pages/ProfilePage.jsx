@@ -2,7 +2,7 @@
 import { Link } from "react-router-dom";
 
 // API
-import { usersAPI } from "@/shared/api/http";
+import { usersAPI } from "@/shared/api";
 
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
@@ -149,3 +149,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+

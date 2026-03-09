@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Phone } from "lucide-react";
-import { authAPI } from "@/shared/api/http";
+import { authAPI } from "@/shared/api";
 import PhoneInput from "@/shared/components/ui/PhoneInput";
 import SubmitButton from "../SubmitButton";
 
@@ -56,3 +56,4 @@ const PhoneStep = ({ phone, onChange, onPhoneExists, onPhoneNew }) => {
 };
 
 export default PhoneStep;
+

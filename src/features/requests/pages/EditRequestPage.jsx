@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // API
-import { requestsAPI } from "@/shared/api/http";
+import { requestsAPI } from "@/shared/api";
 
 // React
 import { useEffect, useMemo, useRef } from "react";
@@ -273,3 +273,4 @@ const Step2 = ({
 };
 
 export default EditRequestPage;
+

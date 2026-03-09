@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { authAPI } from "@/shared/api/http";
+import { authAPI } from "@/shared/api";
 import PasswordField from "../PasswordField";
 import SubmitButton from "../SubmitButton";
 
@@ -63,3 +63,4 @@ const RegisterPassStep = ({
 };
 
 export default RegisterPassStep;
+

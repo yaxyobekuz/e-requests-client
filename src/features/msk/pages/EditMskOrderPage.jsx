@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // API
-import { mskAPI } from "@/shared/api/http";
+import { mskAPI } from "@/shared/api";
 
 // React
 import { useEffect, useMemo, useRef } from "react";
@@ -240,3 +240,4 @@ const EditMskOrderPage = () => {
 };
 
 export default EditMskOrderPage;
+

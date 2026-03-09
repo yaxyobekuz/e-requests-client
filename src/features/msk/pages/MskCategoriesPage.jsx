@@ -2,7 +2,7 @@
 import * as Icons from "lucide-react";
 
 // API
-import { mskAPI } from "@/shared/api/http";
+import { mskAPI } from "@/shared/api";
 
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
@@ -54,3 +54,4 @@ const MskCategoriesPage = () => {
 };
 
 export default MskCategoriesPage;
+

@@ -2,7 +2,7 @@
 import React, { useMemo } from "react";
 
 // API
-import { requestsAPI } from "@/shared/api/http";
+import { requestsAPI } from "@/shared/api";
 
 // Redux
 import { open } from "@/features/modal";
@@ -253,3 +253,4 @@ const CancelRequestForm = ({ _id, close, isLoading, setIsLoading }) => {
 };
 
 export default RequestDetailPage;
+

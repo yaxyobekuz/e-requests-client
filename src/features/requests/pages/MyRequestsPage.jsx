@@ -5,7 +5,7 @@ import { Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // API
-import { requestsAPI } from "@/shared/api/http";
+import { requestsAPI } from "@/shared/api";
 
 // Tanstack Query
 import { useQuery } from "@tanstack/react-query";
@@ -114,3 +114,4 @@ const MyRequestsPage = () => {
 };
 
 export default MyRequestsPage;
+

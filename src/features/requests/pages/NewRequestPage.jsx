@@ -2,7 +2,7 @@
 import { toast } from "sonner";
 
 // API
-import { authAPI, requestsAPI } from "@/shared/api/http";
+import { authAPI, requestsAPI } from "@/shared/api";
 
 // Hooks
 import useObjectState from "@/shared/hooks/useObjectState";
@@ -201,3 +201,4 @@ const Step2 = ({
 };
 
 export default NewRequestPage;
+

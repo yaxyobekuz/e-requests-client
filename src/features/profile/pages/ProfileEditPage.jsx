@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 
 // API
-import { usersAPI } from "@/shared/api/http";
+import { usersAPI } from "@/shared/api";
 
 // Router
 import { Link, useNavigate } from "react-router-dom";
@@ -132,3 +132,4 @@ const ProfileEditPage = () => {
 };
 
 export default ProfileEditPage;
+
