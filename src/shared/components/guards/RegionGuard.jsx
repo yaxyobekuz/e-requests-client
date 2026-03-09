@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { authAPI } from "@/shared/api/http";
+import { authAPI } from "@/shared/api";
 
 const RegionGuard = () => {
   const { data, isLoading } = useQuery({
@@ -25,3 +25,4 @@ const RegionGuard = () => {
 };
 
 export default RegionGuard;
+
