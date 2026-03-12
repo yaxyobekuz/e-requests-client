@@ -4,3 +4,4 @@ export { regionsAPI } from "@/features/regions/api";
 export { requestsAPI } from "@/features/requests/api";
 export { servicesAPI, serviceReportsAPI } from "@/features/services/api";
 export { mskAPI } from "@/features/msk/api";
+export { tomorqaAPI } from "@/features/tomorqa/api";
