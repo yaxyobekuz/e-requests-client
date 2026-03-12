@@ -1,5 +1,5 @@
 // Icons
-import { FileText, Settings, Wrench } from "lucide-react";
+import { FileText, Settings, Wrench, Sprout } from "lucide-react";
 
 const navItems = [
   {
@@ -25,6 +25,14 @@ const navItems = [
     icon: Wrench,
     gradientFrom: "from-orange-400",
     gradientTo: "to-amber-700",
+  },
+  {
+    to: "/tomorqa",
+    label: "Mening tomorqam",
+    description: "Hosil ma'lumotlarini kiriting",
+    icon: Sprout,
+    gradientFrom: "from-lime-400",
+    gradientTo: "to-green-700",
   },
 ];
 
