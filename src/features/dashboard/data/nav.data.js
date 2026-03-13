@@ -1,7 +1,7 @@
 // Icons
 import { FileText, Settings, Wrench, Sprout } from "lucide-react";
 
-const navItems = [
+const mainNavItems = [
   {
     to: "/requests",
     label: "Murojaatlar",
@@ -26,14 +26,17 @@ const navItems = [
     gradientFrom: "from-orange-400",
     gradientTo: "to-amber-700",
   },
+];
+
+const secondaryNavItems = [
   {
     to: "/tomorqa",
     label: "Mening tomorqam",
-    description: "Hosil ma'lumotlarini kiriting",
+    description: "Hosilingiz ma'lumotlarini hisoblash",
     icon: Sprout,
     gradientFrom: "from-lime-400",
     gradientTo: "to-green-700",
   },
 ];
 
-export default navItems;
+export { mainNavItems, secondaryNavItems };
