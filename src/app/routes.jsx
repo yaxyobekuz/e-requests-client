@@ -30,7 +30,11 @@ import MskOrderDetailPage from "@/features/msk/pages/MskOrderDetailPage";
 import GetStartedPage from "@/features/get-started/pages/GetStartedPage";
 import RequestDetailPage from "@/features/requests/pages/RequestDetailPage";
 import MyServiceReportsPage from "@/features/services/pages/MyServiceReportsPage";
-import TomorqaPage from "@/features/tomorqa/pages/TomorqaPage";
+
+// Tomorqa
+import TomorqaLayout from "@/features/tomorqa/layouts/TomorqaLayout";
+import TomorqaCalcPage from "@/features/tomorqa/pages/TomorqaCalcPage";
+import TomorqaEnterPage from "@/features/tomorqa/pages/TomorqaEnterPage";
 
 const Routes = () => {
   return (
@@ -72,7 +76,11 @@ const Routes = () => {
             <Route path="/msk/my-orders" element={<MskMyOrdersPage />} />
             <Route path="/msk/edit/:id" element={<EditMskOrderPage />} />
             <Route path="/msk/orders/:id" element={<MskOrderDetailPage />} />
-            <Route path="/tomorqa" element={<TomorqaPage />} />
+            <Route path="/tomorqa" element={<TomorqaLayout />}>
+              <Route index element={<Navigate to="calc" replace />} />
+              <Route path="calc" element={<TomorqaCalcPage />} />
+              <Route path="enter" element={<TomorqaEnterPage />} />
+            </Route>
           </Route>
         </Route>
       </Route>
