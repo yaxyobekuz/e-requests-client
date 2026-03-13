@@ -18,6 +18,6 @@ export const YEAR_OPTIONS = (() => {
 
 /** Sahifa tablari */
 export const TOMORQA_TABS = [
-  { key: "enter", label: "Hosilni kiritish" },
-  { key: "calc", label: "Kalkulatsiya" },
+  { key: "calc", label: "Kalkulatsiya", path: "/tomorqa/calc" },
+  { key: "enter", label: "Hosilni kiritish", path: "/tomorqa/enter" },
 ];
