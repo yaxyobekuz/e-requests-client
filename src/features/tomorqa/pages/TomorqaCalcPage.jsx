@@ -2,86 +2,79 @@ import { toast } from "sonner";
 import { useState, useEffect, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Brain, TrendingUp, BarChart2, Info } from "lucide-react";
+import {
+  Brain,
+  Info,
+  Boxes,
+  ArrowUpNarrowWide,
+  ArrowDownNarrowWide,
+} from "lucide-react";
 
 import Card from "@/shared/components/ui/Card";
 import { authAPI } from "@/shared/api";
 import { tomorqaAPI } from "@/features/tomorqa/api";
 import useObjectState from "@/shared/hooks/useObjectState";
-import useCountUp from "@/features/tomorqa/hooks/useCountUp";
 import { sleep } from "@/shared/utils/sleep";
 import { SELECT_CLS } from "@/features/tomorqa/data/tomorqa.styles";
 import Lottie from "lottie-react";
 import { aiAnimation } from "@/shared/assets/animations";
 import BackgroundPatterns from "../components/BackgroundPatterns";
+import Counter from "@/shared/components/ui/Counter";
 
 const ResultCard = ({ result, productName, varietyName }) => {
-  const [visible, setVisible] = useState(false);
-  const avg = useCountUp(result?.avgPerSotix, visible);
-  const min = useCountUp(result?.minPerSotix, visible);
-  const max = useCountUp(result?.maxPerSotix, visible);
-
-  useEffect(() => {
-    if (!result) {
-      return;
-    }
-
-    setVisible(false);
-    const timeoutId = setTimeout(() => setVisible(true), 80);
-
-    return () => clearTimeout(timeoutId);
-  }, [result]);
-
-  if (!result) {
-    return null;
-  }
-
+  if (!result) return null;
   return (
-    <div
-      className={`transition-all duration-500 ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-      }`}
-    >
-      <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-2xl p-5 space-y-4">
-        <div className="flex items-center gap-2">
-          <Brain className="size-5 text-blue-500" />
-          <div>
-            <p className="font-semibold text-blue-800 text-sm">
-              {productName} - {varietyName}
-            </p>
-            <p className="text-xs text-blue-500">
-              {result.count} ta ma'lumot asosida hisoblandi
-            </p>
+    <Card className="space-y-4" title={`${productName} - ${varietyName}`}>
+      <ul className="grid grid-cols-2 gap-4 xs:grid-cols-3">
+        {/* 1 */}
+        <li className="bg-blue-50 rounded-xl p-3 text-center">
+          <div className="flex items-center justify-center gap-1.5 text-xl font-bold text-gray-800">
+            <Boxes className="size-5 text-blue-500" strokeWidth={1.5} />
+            <Counter value={result?.avgPerSotix} /> kg
           </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <TrendingUp className="size-4 text-blue-500 mx-auto mb-1" />
-            <p className="text-xl font-bold text-gray-800">{avg}</p>
-            <p className="text-xs text-gray-500 mt-0.5">O'rtacha kg/sotix</p>
-          </div>
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <BarChart2 className="size-4 text-blue-400 mx-auto mb-1" />
-            <p className="text-xl font-bold text-gray-800">{min}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Minimal kg/sotix</p>
-          </div>
-          <div className="bg-white rounded-xl p-3 text-center shadow-sm">
-            <BarChart2 className="size-4 text-orange-400 mx-auto mb-1" />
-            <p className="text-xl font-bold text-gray-800">{max}</p>
-            <p className="text-xs text-gray-500 mt-0.5">Maksimal kg/sotix</p>
-          </div>
-        </div>
+          <p className="text-xs text-gray-600 mt-0.5">1 Sotixdan o'rtacha</p>
+        </li>
 
-        <div className="flex items-start gap-2 bg-blue-50 rounded-xl p-3 text-xs text-blue-700">
-          <Info className="size-3.5 mt-0.5 flex-shrink-0" />
-          <p>
-            Sizning hududingizdagi {productName} ({varietyName}) navidan 1 sotix
-            yerda o'rtacha <strong>{avg} kg</strong> hosil olish mumkin.
-          </p>
-        </div>
+        {/* 2 */}
+        <li className="bg-pink-50 rounded-xl p-3 text-center">
+          <div className="flex items-center justify-center gap-1.5 text-xl font-bold text-gray-800">
+            <ArrowDownNarrowWide
+              strokeWidth={1.5}
+              className="size-5 text-pink-400"
+            />
+            <Counter value={result?.minPerSotix} /> kg
+          </div>
+
+          <p className="text-xs text-gray-600 mt-0.5">1 Sotixdan kamida</p>
+        </li>
+
+        {/* 3 */}
+        <li className="col-span-2 bg-orange-50 rounded-xl p-3 text-center xs:col-span-1">
+          <div className="flex items-center justify-center gap-1.5 text-xl font-bold text-gray-800">
+            <ArrowUpNarrowWide
+              strokeWidth={1.5}
+              className="size-5 text-orange-400"
+            />
+            <Counter value={result?.maxPerSotix} /> kg
+          </div>
+
+          <p className="text-xs text-gray-600 mt-0.5">1 Sotixdan ko'pida</p>
+        </li>
+      </ul>
+
+      <div className="flex items-start gap-2 bg-gray-50 rounded-xl p-3 text-sm col-span-3">
+        <Info
+          strokeWidth={1.5}
+          className="flex-shrink-0 size-5 stroke-primary"
+        />
+        <p>
+          Sizning hududingizdagi {productName} ({varietyName}) navidan 1 sotix
+          yerda o'rtacha <strong>{result?.avgPerSotix} kg</strong> hosil olish
+          mumkin.
+        </p>
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -150,61 +143,54 @@ const TomorqaCalcPage = () => {
 
   return (
     <div className="space-y-5">
-      <Card title="Hosil kalkulatsiyasi">
-        <div className="space-y-3">
-          <p className="text-xs text-gray-500">
-            Mahsulot va navini tanlang. Tizim sizning hududingiz bo'yicha
-            yig'ilgan ma'lumotlar asosida taxminiy hosil miqdorini hisoblaydi.
-          </p>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Mahsulot
-            </label>
-            <select
-              className={SELECT_CLS}
-              value={form.productId}
-              onChange={(event) =>
-                setFields({ productId: event.target.value, varietyId: "" })
-              }
-            >
-              <option value="">- Mahsulotni tanlang -</option>
-              {products.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Nav
-            </label>
-            <select
-              className={SELECT_CLS}
-              value={form.varietyId}
-              onChange={(event) => setField("varietyId", event.target.value)}
-              disabled={!selectedProduct}
-            >
-              <option value="">- Navni tanlang -</option>
-              {(selectedProduct?.varieties || []).map((variety) => (
-                <option key={variety._id} value={variety._id}>
-                  {variety.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            onClick={handleCalc}
-            disabled={isFetching}
-            className="w-full py-2.5 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+      <Card title="Ma'lumotlarni kiriting" className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">
+            Mahsulot
+          </label>
+          <select
+            className={SELECT_CLS}
+            value={form.productId}
+            onChange={(event) =>
+              setFields({ productId: event.target.value, varietyId: "" })
+            }
           >
-            <Brain className="size-4" />
-            {isFetching ? "Hisoblanyapti..." : "Hisoblash"}
-          </button>
+            <option value="">- Mahsulotni tanlang -</option>
+            {products.map((product) => (
+              <option key={product._id} value={product._id}>
+                {product.name}
+              </option>
+            ))}
+          </select>
         </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-1 text-gray-700">
+            Nav
+          </label>
+          <select
+            className={SELECT_CLS}
+            value={form.varietyId}
+            onChange={(event) => setField("varietyId", event.target.value)}
+            disabled={!selectedProduct}
+          >
+            <option value="">- Navni tanlang -</option>
+            {(selectedProduct?.varieties || []).map((variety) => (
+              <option key={variety._id} value={variety._id}>
+                {variety.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button
+          onClick={handleCalc}
+          disabled={isFetching}
+          className="w-full py-2.5 bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+        >
+          <Brain className="size-4" />
+          {isFetching ? "Hisoblanyapti..." : "Hisoblash"}
+        </button>
       </Card>
 
       {isFetching && <AnimatedOverlay />}
