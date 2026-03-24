@@ -12,6 +12,7 @@ const initialState = {
   cancelRequest: initialModalData,
   cancelOrder: initialModalData,
   cancelReport: initialModalData,
+  bugReport: initialModalData,
 };
 
 export const modalSlice = createSlice({
